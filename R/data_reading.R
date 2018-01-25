@@ -1,0 +1,1 @@
+got_deaths <- read.csv("../data/GoT_character-deaths.csv", stringsAsFactors = FALSE, header = TRUE, na.strings = NA)
