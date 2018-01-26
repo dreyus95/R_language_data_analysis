@@ -135,3 +135,17 @@ graph
 #ggsave(plot = graph, filename="../figures/nobility_status_deaths_hist.png")
 ```
 
+<h3>
+6. Last but not least, lets see the if George R.R. Martin has a soft spot for ladies, or is his pen simply merciless.
+</h3>
+
+```{r echo=FALSE}
+options(warn = -1)
+graph <- ggplot(got_deaths, aes(x = Book.of.Death, fill = as.factor(Gender)))
+
+graph <- graph + geom_histogram(bins = 5, color = "black", na.rm = TRUE, binwidth = 0.5, position = "dodge") + labs(fill = "Gender", x = "Book of death", y = "Number of deaths", title = "Number of deaths each book with gender distinction (0 - Female, 1 - Male)")
+
+graph
+#ggsave(plot = graph, filename="../figures/gender_status_deaths_hist.png")
+```
+
