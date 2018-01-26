@@ -1,0 +1,9 @@
+26.01.2018.
+GoT-deaths: Reading csv files
+GoT-deaths: Adding R-markdown
+GoT-deaths: Creating PNGs of graphs
+GoT-deaths: Adding script for reading dataset
+
+------------
+14.01.2018.
+Pushed initial project structure
