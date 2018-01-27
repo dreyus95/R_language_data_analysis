@@ -1,0 +1,67 @@
+---
+title: "Highest mountains exploratory analysis"
+author: "Borna Bejuk"
+date: "January 26, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+options(warn = 0)
+```
+
+## Data summary
+```{r, echo=FALSE}
+hm <- read.csv("../data/HighestMountains.csv", stringsAsFactors = F, header = T, na.strings = '')
+hm <- tbl_df(hm)
+head(hm)
+glimpse(hm)
+summary(hm)
+```
+```{r, echo = F}
+hm <- mutate(hm, HeightCategory = cut(Height..m., 5, labels = F))
+hm <- mutate(hm, RankCategory = ntile(Rank, 5))
+hm$First.ascent <- as.integer(sub('unclimbed', NaN, hm$First.ascent))
+hm <- mutate(hm, FirstClimbCategory = cut(First.ascent, 5, dig.lab = 4, na.rm = T))
+```
+
+```{r, echo = F}
+options(warn = -1)
+graph <- ggplot(hm, aes(x = Height..m.)) + geom_histogram(bins = 10) + labs(x = 'Mountain height in meters', y = 'Count', title = 'Distribution of mountain heights')
+#ggsave(plot = graph, filename="../figures/MountainHeights.png")
+graph
+```
+
+```{r, echo = F}
+
+graph <- ggplot(hm, aes(x = HeightCategory)) + geom_histogram(bins = 5, stat = 'count') + labs(x = 'Height category', y = 'Count', title = 'Height count when height is categorized into 5 groups')
+#ggsave(plot = graph, filename="../figures/MountainHeights5groups.png")
+graph
+```
+```{r, echo = F}
+graph <- ggplot(hm, aes(x = HeightCategory, fill = hm$Parent.mountain)) + geom_histogram(bins = 5, color = 'black') + labs(fill = 'Parent mountain', x = 'Height category', y = 'Count', title = 'Height count based on the mountain\'s parent mountain\n')
+#ggsave(plot = graph, filename="../figures/MountainHeightsByParent.png")
+graph
+```
+
+```{r, echo = F}
+options(warn = -1)
+hm %>% group_by(HeightCategory) -> groupedByHC
+summarise(groupedByHC, countOfFailures = sum(Failed.attempts.bef..2004, na.rm = T)) -> groupedByHC
+graph <- ggplot(groupedByHC, aes(groupedByHC$HeightCategory, groupedByHC$countOfFailures)) + geom_col() + labs(x = 'Height category', y = 'Failed attempts', title = 'Number of failed attempts for each height category')
+#ggsave(plot = graph, filename="../figures/FailedAscentAttempts.png")
+graph
+```
+
+```{r, echo = F}
+
+filter(hm, !is.na(hm$FirstClimbCategory)) %>% ggplot(aes(FirstClimbCategory)) + geom_histogram(bins = 5, stat = 'count', na.rm = T) + labs(x = 'Height category', y = 'Count', title = 'Count of ascents when categorized into 5 groups by the year of ascent') -> graph
+#ggsave(plot = graph, filename="../figures/YearOfAscents.png")
+graph
+```
+

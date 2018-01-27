@@ -1,3 +1,9 @@
+27.01.2018.
+HighestMountains: Reading csv file
+HighestMountains: Adding Rmd file
+HighestMountains: Creating PNGs of graphs
+
+-----------
 26.01.2018.
 GoT-deaths: Reading csv files
 GoT-deaths: Adding R-markdown
