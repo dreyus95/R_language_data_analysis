@@ -32,7 +32,7 @@ hm <- mutate(hm, FirstClimbCategory = cut(First.ascent, 5, dig.lab = 4, na.rm = 
 ## 1. Let us first see the distribution of mountain heights in 10 bins
 ```{r, echo = F}
 options(warn = -1)
-graph <- ggplot(hm, aes(x = Height..m.)) + geom_histogram(bins = 10) + labs(x = 'Mountain height in meters', y = 'Count', title = 'Distribution of mountain heights')
+graph <- ggplot(hm, aes(x = Height..m.)) + geom_histogram(bins = 10, fill = 'light blue', color = 'black') + labs(x = 'Mountain height in meters', y = 'Count', title = 'Distribution of mountain heights')
 #ggsave(plot = graph, filename="../figures/MountainHeights.png")
 graph
 ```
@@ -41,7 +41,7 @@ graph
 
 ## 2. Grouping the mountain heights into 5 groups based on their height
 ```{r, echo = F}
-graph <- ggplot(hm, aes(x = HeightCategory)) + geom_histogram(bins = 5, stat = 'count') + labs(x = 'Height category', y = 'Count', title = 'Height count when height is categorized into 5 groups')
+graph <- ggplot(hm, aes(x = HeightCategory)) + geom_histogram(bins = 5, stat = 'count', fill = 'light blue', color = 'black') + labs(x = 'Height category', y = 'Count', title = 'Height count when height is categorized into 5 groups')
 #ggsave(plot = graph, filename="../figures/MountainHeights5groups.png")
 graph
 ```
@@ -61,7 +61,7 @@ graph
 
 ## 4. Is there any link between the mountain height and the number of failed attempts ?
 ```{r, echo = F}
-graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004)) + geom_point() + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
+graph <- ggplot(hm, aes(x = Height..m., y = Failed.attempts.bef..2004, color = Height..m.)) + geom_point(na.rm = TRUE) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height', color = 'Height')
 #ggsave(plot = graph, filename="../figures/FailedAscentAttemptsPoints.png")
 graph
 ```
@@ -71,14 +71,14 @@ graph
 We can try to visualize the pattern using stat_smooth
 
 ```{r, echo = F}
-graph + geom_point() + stat_smooth(method = 'loess') -> graph2
+graph + geom_point(na.rm = TRUE) + stat_smooth(na.rm = TRUE, method = 'loess') -> graph2
 #ggsave(plot = graph2, filename="../figures/FailedAscentAttemptsPointsLoess.png")
 graph2
 ```
 
 Or we could furhter try to improve our visualization by using different colors for each height category.
 ```{r, echo = F}
-graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004, color = HeightCategory)) + geom_point() + geom_smooth(aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004), method = 'loess', linetype = 4, color = "grey", se = F, inherit.aes = F) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
+graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004, color = HeightCategory)) + geom_point(na.rm = TRUE) + geom_smooth(na.rm = TRUE, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004), method = 'loess', linetype = 4, color = "grey", se = FALSE, inherit.aes = FALSE) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
 #ggsave(plot = graph, filename="../figures/FailedAscentAttemptsPointsLoessColor.png")
 graph
 ```
@@ -89,7 +89,7 @@ graph
 options(warn = -1)
 hm %>% group_by(HeightCategory) -> groupedByHC
 summarise(groupedByHC, countOfFailures = sum(Failed.attempts.bef..2004, na.rm = T)) -> groupedByHC
-graph <- ggplot(groupedByHC, aes(groupedByHC$HeightCategory, groupedByHC$countOfFailures)) + geom_col() + labs(x = 'Height category', y = 'Failed attempts', title = 'Number of failed attempts for each height category')
+graph <- ggplot(groupedByHC, aes(groupedByHC$HeightCategory, groupedByHC$countOfFailures)) + geom_col(fill = 'light blue', color = 'black') + labs(x = 'Height category', y = 'Failed attempts', title = 'Number of failed attempts for each height category')
 #ggsave(plot = graph, filename="../figures/FailedAscentAttempts.png")
 graph
 ```
@@ -99,7 +99,7 @@ graph
 ## 6. Let's investigate in which years were the mountain hikers most active
 ```{r, echo = F}
 
-filter(hm, !is.na(hm$FirstClimbCategory)) %>% ggplot(aes(FirstClimbCategory)) + geom_histogram(bins = 5, stat = 'count', na.rm = T) + labs(x = 'Height category', y = 'Count', title = 'Count of ascents when categorized into 5 groups by the year of ascent') -> graph
+filter(hm, !is.na(hm$FirstClimbCategory)) %>% ggplot(aes(FirstClimbCategory)) + geom_histogram(bins = 5, stat = 'count', na.rm = TRUE, fill = 'light blue', color = 'black') + labs(x = 'Height category', y = 'Count', title = 'Count of ascents when categorized into 5 groups by the year of ascent') -> graph
 #ggsave(plot = graph, filename="../figures/YearOfAscents.png")
 graph
 ```
