@@ -29,7 +29,7 @@ hm <- mutate(hm, RankCategory = ntile(Rank, 5))
 hm$First.ascent <- as.integer(sub('unclimbed', NaN, hm$First.ascent))
 hm <- mutate(hm, FirstClimbCategory = cut(First.ascent, 5, dig.lab = 4, na.rm = T))
 ```
-
+## 1. Let us first see the distribution of mountain heights in 10 bins
 ```{r, echo = F}
 options(warn = -1)
 graph <- ggplot(hm, aes(x = Height..m.)) + geom_histogram(bins = 10) + labs(x = 'Mountain height in meters', y = 'Count', title = 'Distribution of mountain heights')
@@ -37,18 +37,54 @@ graph <- ggplot(hm, aes(x = Height..m.)) + geom_histogram(bins = 10) + labs(x = 
 graph
 ```
 
-```{r, echo = F}
+- The distribution is right skewed (median is to the left of the mean), meaning we have a small number of mountains that fall to the right of the mean and a large number that fall to the left of the mean.  
 
+## 2. Grouping the mountain heights into 5 groups based on their height
+```{r, echo = F}
 graph <- ggplot(hm, aes(x = HeightCategory)) + geom_histogram(bins = 5, stat = 'count') + labs(x = 'Height category', y = 'Count', title = 'Height count when height is categorized into 5 groups')
 #ggsave(plot = graph, filename="../figures/MountainHeights5groups.png")
 graph
 ```
+
+- We decided to divide the mountains into 5 categories based on their height to aid us in further analysis of the dataset
+- Based on this initial grouping we see the most mountains fall into the first category
+
+## 3. Let us see who are the parent mountains of our mountains when looking at our 5 groups
 ```{r, echo = F}
-graph <- ggplot(hm, aes(x = HeightCategory, fill = hm$Parent.mountain)) + geom_histogram(bins = 5, color = 'black') + labs(fill = 'Parent mountain', x = 'Height category', y = 'Count', title = 'Height count based on the mountain\'s parent mountain\n')
+filter(hm, !is.na(hm$Parent.mountain)) %>% ggplot(aes(x = HeightCategory, fill = Parent.mountain)) + geom_histogram(bins = 5, color = 'black') + labs(fill = 'Parent mountain', x = 'Height category', y = 'Count', title = 'Height count based on the mountain\'s parent mountain\n\n') -> graph
 #ggsave(plot = graph, filename="../figures/MountainHeightsByParent.png")
 graph
 ```
 
+- We wanted the see if we could spot any link between the mountain's height and its parent mountain
+- We can see that the highest mountains mostly have Mount Everest as its parent mountain
+
+## 4. Is there any link between the mountain height and the number of failed attempts ?
+```{r, echo = F}
+graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004)) + geom_point() + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
+#ggsave(plot = graph, filename="../figures/FailedAscentAttemptsPoints.png")
+graph
+```
+
+- Due to small number of data points it is hard to draw any conclusions but a sort of exponential growth is noticable
+
+We can try to visualize the pattern using stat_smooth
+
+```{r, echo = F}
+graph + geom_point() + stat_smooth(method = 'loess') -> graph2
+#ggsave(plot = graph2, filename="../figures/FailedAscentAttemptsPointsLoess.png")
+graph2
+```
+
+Or we could furhter try to improve our visualization by using different colors for each height category.
+```{r, echo = F}
+graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004, color = HeightCategory)) + geom_point() + geom_smooth(aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004), method = 'loess', linetype = 4, color = "grey", se = F, inherit.aes = F) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
+#ggsave(plot = graph, filename="../figures/FailedAscentAttemptsPointsLoessColor.png")
+graph
+```
+
+
+## 5. Let us again see the number of failed attempts for each height category using histogram
 ```{r, echo = F}
 options(warn = -1)
 hm %>% group_by(HeightCategory) -> groupedByHC
@@ -58,10 +94,16 @@ graph <- ggplot(groupedByHC, aes(groupedByHC$HeightCategory, groupedByHC$countOf
 graph
 ```
 
+- Using histogram we can see that the third category of mountains was the most 'trialed and errored'
+
+## 6. Let's investigate in which years were the mountain hikers most active
 ```{r, echo = F}
 
 filter(hm, !is.na(hm$FirstClimbCategory)) %>% ggplot(aes(FirstClimbCategory)) + geom_histogram(bins = 5, stat = 'count', na.rm = T) + labs(x = 'Height category', y = 'Count', title = 'Count of ascents when categorized into 5 groups by the year of ascent') -> graph
 #ggsave(plot = graph, filename="../figures/YearOfAscents.png")
 graph
 ```
+
+- We see that according to this dataset most ascents fall in the category that is between years 1946 and 1962.
+
 
