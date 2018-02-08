@@ -3,8 +3,8 @@ title: "Highest mountains exploratory analysis"
 author: "Borna Bejuk"
 date: "January 26, 2018"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -61,7 +61,7 @@ graph
 
 ## 4. Is there any link between the mountain height and the number of failed attempts ?
 ```{r, echo = F}
-graph <- ggplot(hm, aes(x = Height..m., y = Failed.attempts.bef..2004, color = Height..m.)) + geom_point(na.rm = TRUE) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height', color = 'Height')
+graph <- ggplot(hm, aes(x = Height..m., y = Failed.attempts.bef..2004)) + geom_point(na.rm = TRUE) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
 #ggsave(plot = graph, filename="../figures/FailedAscentAttemptsPoints.png")
 graph
 ```
@@ -78,7 +78,7 @@ graph2
 
 Or we could furhter try to improve our visualization by using different colors for each height category.
 ```{r, echo = F}
-graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004, color = HeightCategory)) + geom_point(na.rm = TRUE) + geom_smooth(na.rm = TRUE, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004), method = 'loess', linetype = 4, color = "grey", se = FALSE, inherit.aes = FALSE) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height')
+graph <- ggplot(hm, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004, color = as.factor(HeightCategory))) + geom_point(na.rm = TRUE) + geom_smooth(na.rm = TRUE, aes(x = hm$Height..m., y = hm$Failed.attempts.bef..2004), method = 'loess', linetype = 4, color = "grey", se = FALSE, inherit.aes = FALSE) + labs(x = 'Mountain height in meters', y = 'Number of failed ascent attempts', title = 'Number of failed ascent attempts in connection with the mountain height', color = 'Height category')
 #ggsave(plot = graph, filename="../figures/FailedAscentAttemptsPointsLoessColor.png")
 graph
 ```
